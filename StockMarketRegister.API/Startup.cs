@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using StockMarketRegister.API.Entities;
 using StockMarketRegister.API.Models;
 using StockMarketRegister.API.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace StockMarketRegister.API
 {
@@ -30,6 +31,11 @@ namespace StockMarketRegister.API
             services.AddDbContext<StockMarketContext>(o => o.UseSqlServer(connectionString));
 
             services.AddScoped<IStockMarketRepository, StockMarketRepository>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Stock Market Register API", Version = "v1" });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -73,6 +79,13 @@ namespace StockMarketRegister.API
                 cfg.CreateMap<OrderDto, Order>();
                 cfg.CreateMap<OrderForCreationDto, Order>();
 
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stock Market Register API V1");
             });
 
             app.UseMvc();
