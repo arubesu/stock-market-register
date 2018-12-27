@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StockMarketRegister.API.Entities;
+using StockMarketRegister.API.Models;
 using StockMarketRegister.API.Services;
 
 namespace StockMarketRegister.API
@@ -56,6 +58,23 @@ namespace StockMarketRegister.API
                     });
                 });
             }
+
+            Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<Client, ClientDto>();
+                cfg.CreateMap<ClientForCreationDto, Client>();
+                cfg.CreateMap<ClientForUpdateDto, Client>();
+
+                cfg.CreateMap<Stock, StockDto>();
+                cfg.CreateMap<StockForCreationDto, Stock>();
+                cfg.CreateMap<StockForUpdateDto, Stock>();
+
+                cfg.CreateMap<Order, OrderDto>();
+                cfg.CreateMap<OrderDto, Order>();
+                cfg.CreateMap<OrderForCreationDto, Order>();
+
+            });
+
             app.UseMvc();
         }
     }

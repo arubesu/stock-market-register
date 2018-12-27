@@ -17,10 +17,11 @@ namespace StockMarketRegister.API.Services
         Stock GetStock(Guid stockId);
         void UpdateStock(Stock stock);
         void DeleteStock(Stock stock);
+        bool StockExists(string stockCode, DateTime orderDate);
 
         IEnumerable<Order> GetOrdersForClient(Guid clientId);
         IEnumerable<Order> GetOrders();
-        Order GetOrderForClient(Guid clientId, Guid orderId);
+        Order GetOrder(Guid orderId);
         void AddOrderForClient(Guid clientId, Order order);
 
         bool Save();

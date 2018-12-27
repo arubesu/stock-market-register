@@ -24,15 +24,11 @@ namespace StockMarketRegister.API.Services
         {
             var client = GetClient(clientId);
 
-            if(client != null)
+            if (client != null)
             {
-                if(order.Id == Guid.Empty)
-                {
-                    order.Id = new Guid();
-                }
-
+                order.Id = new Guid();
                 order.Client = client;
-                order.ClientId = clientId;
+                _context.Orders.Add(order);
             }
         }
 
@@ -54,7 +50,7 @@ namespace StockMarketRegister.API.Services
 
         public Client GetClient(Guid clientId)
         {
-           return _context.Clients.FirstOrDefault(c => c.Id == clientId);
+            return _context.Clients.FirstOrDefault(c => c.Id == clientId);
         }
 
         public IEnumerable<Client> GetClients()
@@ -62,9 +58,9 @@ namespace StockMarketRegister.API.Services
             return _context.Clients.OrderBy(c => c.Name);
         }
 
-        public Order GetOrderForClient(Guid clientId, Guid orderId)
+        public Order GetOrder(Guid orderId)
         {
-            return _context.Orders.Where(o => o.Id == orderId && o.ClientId == clientId).FirstOrDefault();
+            return _context.Orders.FirstOrDefault(o => o.Id == orderId);
         }
 
         public IEnumerable<Order> GetOrdersForClient(Guid clientId)
@@ -90,7 +86,7 @@ namespace StockMarketRegister.API.Services
 
         public bool Save()
         {
-            return _context.SaveChanges() >= 0; 
+            return _context.SaveChanges() >= 0;
         }
 
         public void UpdateClient(Client client)
@@ -99,6 +95,11 @@ namespace StockMarketRegister.API.Services
 
         public void UpdateStock(Stock stock)
         {
+        }
+
+        public bool StockExists(string stockCode, DateTime orderDate)
+        {
+            return _context.Stocks.Any(s => s.Code == stockCode && s.Date == orderDate);
         }
     }
 }
