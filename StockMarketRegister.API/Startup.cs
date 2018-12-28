@@ -25,6 +25,7 @@ namespace StockMarketRegister.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddMvc();
 
             var connectionString = Configuration["connectionStrings:StockMarketDBConnectionString"];
@@ -64,6 +65,13 @@ namespace StockMarketRegister.API
                     });
                 });
             }
+
+            app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
+            app.UseMvc();
 
             Mapper.Initialize(cfg =>
             {
