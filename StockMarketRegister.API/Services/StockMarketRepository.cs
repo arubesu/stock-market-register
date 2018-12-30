@@ -99,7 +99,7 @@ namespace StockMarketRegister.API.Services
 
         public bool StockExists(string stockCode, DateTime orderDate)
         {
-            return _context.Stocks.Any(s => s.Code == stockCode && s.Date == orderDate);
+            return _context.Stocks.Any(s => s.Code == stockCode && s.Date.Date == orderDate.Date);
         }
     }
 }

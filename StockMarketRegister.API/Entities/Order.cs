@@ -24,7 +24,7 @@ namespace StockMarketRegister.API.Entities
         [Required]
         public int StockAmount { get; set; }
 
-        public DateTime BuyDate { get; set; }
+        public DateTime? BuyDate { get; set; }
 
         public decimal OrderValue { get; set; }
 
