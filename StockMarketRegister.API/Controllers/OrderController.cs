@@ -52,8 +52,12 @@ namespace StockMarketRegister.API.Controllers
             }
 
             var stockCode = orderDto.StockCode;
-            var orderDate = DateTime.Now;
-            orderDto.OrderDate = orderDate;
+
+            if (!_repository.StockExists(stockCode, orderDto.OrderDate))
+            {
+                return StatusCode(412);
+            }
+
             var entity = Mapper.Map<Order>(orderDto);
 
             var orderValue = CalculateOrderValue(orderDto.StockAmount, GetStockValueByStockCode(stockCode));
@@ -61,11 +65,6 @@ namespace StockMarketRegister.API.Controllers
             entity.OrderValue = orderValue;
             entity.BrokerageFee = CalculateBrokerageFee(orderDto.Type, orderValue);
             entity.IncomeTax = CalculateIncomeTax(orderDto);
-
-            if (_repository.StockExists(stockCode, orderDate))
-            {
-                return StatusCode(409);
-            }
 
             _repository.AddOrderForClient(orderDto.ClientId, entity);
 
@@ -87,7 +86,7 @@ namespace StockMarketRegister.API.Controllers
 
         private decimal CalculateOrderValue(int stockAmount, decimal stockValue)
         {
-            return stockValue * stockValue;
+            return stockAmount * stockValue;
         }
 
         private decimal CalculateBrokerageFee(char orderType, decimal orderValue)
@@ -116,12 +115,17 @@ namespace StockMarketRegister.API.Controllers
             {
                 if (stockCode != null)
                 {
-                    decimal orderValue = _repository.GetStocks().FirstOrDefault(s => s.Code == stockCode && s.Date.Date == order.OrderDate.Date).Price;
-                    decimal buyValue = _repository.GetStocks().FirstOrDefault(s => s.Code == stockCode && s.Date.Date == order.BuyDate.Date).Price;
-                    decimal variation = orderValue - buyValue;
+                    var stockFromOrderDate = _repository.GetStocks().FirstOrDefault(s => s.Code == stockCode && s.Date.Date == order.OrderDate.Date);
+                    var stockFromBuyDate = _repository.GetStocks().FirstOrDefault(s => s.Code == stockCode && s.Date.Date == order.BuyDate?.Date);
 
-                    if (variation > 0)
-                        income = (order.StockAmount * variation) * 0.15m;
+                    if (stockFromOrderDate != null && stockFromBuyDate != null)
+                    {
+                        decimal orderDateQuote = stockFromOrderDate.Price;
+                        decimal buyDateQuote = stockFromBuyDate.Price;
+                        decimal variation = orderDateQuote - buyDateQuote;
+                        if (variation > 0)
+                            income = (order.StockAmount * variation) * 0.15m;
+                    }
                 }
             }
             return income;
