@@ -39,7 +39,7 @@ namespace StockMarketRegister.API
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, StockMarketContext stockMarketContext)
         {
             if (env.IsDevelopment())
             {
@@ -67,11 +67,10 @@ namespace StockMarketRegister.API
             }
 
             app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
-            app.UseMvc();
+               .AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials());
 
             Mapper.Initialize(cfg =>
             {
@@ -96,6 +95,7 @@ namespace StockMarketRegister.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stock Market Register API V1");
             });
 
+            stockMarketContext.EnsureSeedDataForContext();
             app.UseMvc();
         }
     }

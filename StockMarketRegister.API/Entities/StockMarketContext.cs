@@ -6,6 +6,7 @@ namespace StockMarketRegister.API.Entities
     {
         public StockMarketContext(DbContextOptions<StockMarketContext> options) : base(options)
         {
+            Database.Migrate();
         }
 
         public DbSet<Client> Clients { get; set; }
